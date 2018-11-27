@@ -4,14 +4,14 @@ function u = control(t, q, dq, q0, dq0, step_number)
 % you don't necessarily need to use all the inputs to this control function
 sigmoid = @(x) (pi/50)/(1+exp(-x));
 stepangle = step_number*pi/150;
-% if (stepangle<pi/50)
-%     stepangle=pi/50;
-% end
-% if (stepangle>pi/)
-%     stepangle=pi/30;
-% end
+if (stepangle<pi/50)
+    stepangle=pi/50;
+end
+if (stepangle>pi/)
+    stepangle=pi/30;
+end
     
- y=[q(3);q(2)-q(3)+stepangle]
+ y=[q(3);q(2)-q(3)+stepangle];
  dy=[dq(3);dq(2)-dq(3)];
 Kp=[100; -100];
 Kd=[10 ; -10];
