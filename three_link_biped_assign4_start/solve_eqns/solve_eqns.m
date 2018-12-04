@@ -8,6 +8,8 @@
 
 function sln = solve_eqns(q0, dq0, num_steps)
 
+global optData h_ i_ j_ k_ m_ n_ p_; %optimization data structure, along with global indices so it can be populated from other functions
+
 options = odeset('RelTol',1e-5, 'Events', @event_func);
 h = 0.001; % time step
 tmax = 2; % max time that we allow for a single step
@@ -41,6 +43,23 @@ for i = 1:num_steps
     y0 = [q_p; dq_p];
     t0 = T(end);
     
+end
+if isfield(optData,'time')
+    optData(h_,i_,j_,k_,m_,n_,p_).time = t0;
+    
+    %finding the final position, in much the same way as animate does
+    r0 = [0; 0];
+    for j = 1:num_steps-1       
+        Y = sln.Y{j};
+        [x0, ~, ~, ~] = kin_swf(Y(end,1:3));
+        r0 = r0 + [x0; 0]; %find the starting position after jth step
+    end
+    Y_f = sln.Y{end}; %
+    q_f = Y_f(end,1:3); %angles of limbs at end
+    x0 = r0(1); %offset position of hip after num_steps steps
+    [~, ~, ~, l1, ~, ~, ~] = set_parameters;
+    x_h_final = l1*sin(q_f(1)) + x0;
+    optData(h_,i_,j_,k_,m_,n_,p_).dist = x_h_final; %final hip position
 end
 end
 
