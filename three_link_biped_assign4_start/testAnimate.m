@@ -5,11 +5,11 @@ clf;
 close all;
 clearvars –global
 
-global optData h_ i_ j_ k_ m_ n_ p_ plotsOn; %optimization data structure, along with global indices so it can be populated from other functions
+global optData h_ i_ j_ k_ m_ n_ p_ q_ plotsOn; %optimization data structure, along with global indices so it can be populated from other functions
 
 %number of search steps for each variable
-NumKd = 5*[1, 1];
-NumKp = 5*[1, 1];
+NumKd = 1*[1, 1];
+NumKp = 1*[1, 1];
 
 %step sizes for each variable. start coarse, improve resolution around
 %points of interest
@@ -26,6 +26,8 @@ if ~exist('bestParams.mat','file')
     xScales = [.46]; %manually input for now.. don't think it'll make a huge difference. 
     %xScales correspond with ~convergence in 2, 4, 6, 12, and 24 steps
     %respectively
+    
+    torso_angle = [0,.05,.1,.15,.2];
 else
     load bestParams
     Kp0=[bestParams.Kp1; bestParams.Kp2];
@@ -37,14 +39,17 @@ else
     minStep = bestParams.minStep;
     maxStep = bestParams.maxStep;
     xScale = bestParams.xScale;
+    torsoAngle = bestParams.torsoAngle;
     minSteps = minStep;%*[.9 1 1.1];
     maxSteps = maxStep;%*[.9 1 1.1];
     xScales = xScale;%*[.9 1 1.1]; 
+    torsoAngles = torsoAngle+[-.1,-.05,0,.05,.1];
 end
 
 NumStepAngle = length(xScales);
 NumMaxStep = length(maxSteps);
 NumMinStep = length(minSteps);
+NumTorsoAngle = length(torsoAngles);
 
 %initial conditions for the walker
 q0 = [0;pi/3;pi/10];
@@ -68,27 +73,31 @@ for h_=NumKd(1):-1:1
                 for m_=NumStepAngle:-1:1
                     for n_=NumMaxStep:-1:1
                         for p_ = NumMinStep:-1:1
-                            %parameters to be optimized
-                            optData(h_,i_,j_,k_,m_,n_,p_).Kd1 = Kd0(1)+StepKd(1)*(h_-ceil(NumKd(1)/2));
-                            optData(h_,i_,j_,k_,m_,n_,p_).Kp1 = Kp0(1)+StepKp(1)*(i_-ceil(NumKp(1)/2));
-                            optData(h_,i_,j_,k_,m_,n_,p_).Kd2 = Kd0(2)+StepKd(2)*(j_-ceil(NumKd(2)/2));
-                            optData(h_,i_,j_,k_,m_,n_,p_).Kp2 = Kp0(2)+StepKp(2)*(k_-ceil(NumKp(2)/2));
-                            optData(h_,i_,j_,k_,m_,n_,p_).xScale = xScales(m_); %how quickly step angle increases, using sigmoid function
-                            optData(h_,i_,j_,k_,m_,n_,p_).maxStep = maxSteps(n_); %max target step angle achieved by sigmoid function                           
-                            optData(h_,i_,j_,k_,m_,n_,p_).minStep = minSteps(p_); %max target step angle achieved by sigmoid function
+                            for q_ = NumTorsoAngle:-1:1
+                                %parameters to be optimized
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).Kd1 = Kd0(1)+StepKd(1)*(h_-ceil(NumKd(1)/2));
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).Kp1 = Kp0(1)+StepKp(1)*(i_-ceil(NumKp(1)/2));
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).Kd2 = Kd0(2)+StepKd(2)*(j_-ceil(NumKd(2)/2));
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).Kp2 = Kp0(2)+StepKp(2)*(k_-ceil(NumKp(2)/2));
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).xScale = xScales(m_); %how quickly step angle increases, using sigmoid function
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).maxStep = maxSteps(n_); %max target step angle achieved by sigmoid function                           
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).minStep = minSteps(p_); %max target step angle achieved by sigmoid function                      
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).torsoAngle = torsoAngles(q_); %max target step angle achieved by sigmoid function
 
-                            %data to be output
-                            optData(h_,i_,j_,k_,m_,n_,p_).uNet = zeros(1,2); %total input given to each actuator, Nm
-                            optData(h_,i_,j_,k_,m_,n_,p_).dist = 0; %total distance travelled, measured by the hip, m
-                            optData(h_,i_,j_,k_,m_,n_,p_).time = 0; %total time, s
-                            optData(h_,i_,j_,k_,m_,n_,p_).solution = solve_eqns(q0,dq0,num_steps);
+                                %data to be output
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet = zeros(1,2); %total input given to each actuator, Nm
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).dist = 0; %total distance travelled, measured by the hip, m
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).time = 0; %total time, s
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).solution = solve_eqns(q0,dq0,num_steps);
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).stepVel = 0; %avg step velocity of the final step
 
-                            if(plotsOn==1)
-                                animate(optData(h_,i_,j_,k_,m_,n_,p_).solution);
+                                if(plotsOn==1)
+                                    animate(optData(h_,i_,j_,k_,m_,n_,p_,q_).solution);
+                                end
+
+                                strcat(['Processing Combination ',num2str(iterCount),' of ',num2str(numIter)])
+                                iterCount = iterCount+1;
                             end
-                            
-                            strcat(['Processing Combination ',num2str(iterCount),' of ',num2str(numIter)])
-                            iterCount = iterCount+1;
                         end
                     end
                 end
@@ -134,6 +143,8 @@ bestParams.dist = dist(i);
 bestParams.index = i;
 Solutions = [optDataVec.solution];
 bestParams.solution = Solutions(i);
+velocities = [optDataVec.stepVel];
+bestParams.velocity = velocities(i);
 save('bestParams','bestParams');
 
 bestParams %display new optimal parameters

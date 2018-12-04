@@ -8,7 +8,7 @@
 
 function sln = solve_eqns(q0, dq0, num_steps)
 
-global optData h_ i_ j_ k_ m_ n_ p_; %optimization data structure, along with global indices so it can be populated from other functions
+global optData h_ i_ j_ k_ m_ n_ p_ q_; %optimization data structure, along with global indices so it can be populated from other functions
 
 options = odeset('RelTol',1e-5, 'Events', @event_func);
 h = 0.001; % time step
@@ -45,7 +45,15 @@ for i = 1:num_steps
     
 end
 if isfield(optData,'time')
-    optData(h_,i_,j_,k_,m_,n_,p_).time = t0;
+    optData(h_,i_,j_,k_,m_,n_,p_,q_).time = t0;
+    
+    [~, ~, ~, l1, ~, ~, ~] = set_parameters;
+    
+    step_time = t0-T(1);
+    q1i = Y(1,1);
+    q1f = Y(end,1);
+    step_dist = l1*(sin(q1f)-sin(q1i));
+    optData(h_,i_,j_,k_,m_,n_,p_,q_).stepVel = step_dist/step_time; %avg step velocity measured at the hip
     
     %finding the final position, in much the same way as animate does
     r0 = [0; 0];
@@ -57,9 +65,8 @@ if isfield(optData,'time')
     Y_f = sln.Y{end}; %
     q_f = Y_f(end,1:3); %angles of limbs at end
     x0 = r0(1); %offset position of hip after num_steps steps
-    [~, ~, ~, l1, ~, ~, ~] = set_parameters;
     x_h_final = l1*sin(q_f(1)) + x0;
-    optData(h_,i_,j_,k_,m_,n_,p_).dist = x_h_final; %final hip position
+    optData(h_,i_,j_,k_,m_,n_,p_,q_).dist = x_h_final; %final hip position
 end
 end
 
