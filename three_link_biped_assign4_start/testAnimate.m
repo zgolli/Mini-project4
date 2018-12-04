@@ -8,8 +8,8 @@ clearvars –global
 global optData h_ i_ j_ k_ m_ n_ p_ q_ plotsOn; %optimization data structure, along with global indices so it can be populated from other functions
 
 %number of search steps for each variable
-NumKd = 1*[1, 1];
-NumKp = 1*[1, 1];
+NumKd = 3*[1, 1];
+NumKp = 3*[1, 1];
 
 %step sizes for each variable. start coarse, improve resolution around
 %points of interest
@@ -27,7 +27,7 @@ if ~exist('bestParams.mat','file')
     %xScales correspond with ~convergence in 2, 4, 6, 12, and 24 steps
     %respectively
     
-    torso_angle = [0,.05,.1,.15,.2];
+    torsoAngles = [0,.05,.1,.15,.2];
 else
     load bestParams
     Kp0=[bestParams.Kp1; bestParams.Kp2];
@@ -49,14 +49,14 @@ end
 NumStepAngle = length(xScales);
 NumMaxStep = length(maxSteps);
 NumMinStep = length(minSteps);
-NumTorsoAngle = length(torsoAngles);
+NumTorsoAngles = length(torsoAngles);
 
 %initial conditions for the walker
 q0 = [0;pi/3;pi/10];
 dq0 = [0;0;0];
 num_steps = 25;
 
-numIter = NumKd(1)*NumKd(2)*NumKp(1)*NumKp(2)*NumStepAngle*NumMaxStep*NumMinStep;
+numIter = NumKd(1)*NumKd(2)*NumKp(1)*NumKp(2)*NumStepAngle*NumMaxStep*NumMinStep*NumTorsoAngles;
 
 if(numIter < 5)
     plotsOn = 1;
@@ -73,7 +73,7 @@ for h_=NumKd(1):-1:1
                 for m_=NumStepAngle:-1:1
                     for n_=NumMaxStep:-1:1
                         for p_ = NumMinStep:-1:1
-                            for q_ = NumTorsoAngle:-1:1
+                            for q_ = NumTorsoAngles:-1:1
                                 %parameters to be optimized
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).Kd1 = Kd0(1)+StepKd(1)*(h_-ceil(NumKd(1)/2));
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).Kp1 = Kp0(1)+StepKp(1)*(i_-ceil(NumKp(1)/2));
