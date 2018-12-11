@@ -13,8 +13,8 @@ NumKp = 1*[1, 1];
 
 %step sizes for each variable. start coarse, improve resolution around
 %points of interest
-StepKd = [1, 1];
-StepKp = [10, 10];
+StepKd = 6*[1, 1];
+StepKp = 6*[10, 10];
 
 if ~exist('bestParams.mat','file')
     %nominal gains to be optimized
@@ -37,13 +37,13 @@ else
     StepKp = .5*StepKp; 
     
     minStep = bestParams.minStep;
-    maxStep = bestParams.maxStep;
+    maxStep = pi/2;%bestParams.maxStep;
     xScale = bestParams.xScale;
     torsoAngle = .18;%bestParams.torsoAngle;
-    minSteps = pi/70*[.8 .9 1 1.1 1.2];%minStep;%*(.5:.1:1.5);
-    maxSteps = pi/100*[.8 .9 1 1.1 1.2];%maxStep;%*(.5:.1:1.5);
-    xScales = xScale*[.9 1 1.1]; 
-    torsoAngles = torsoAngle;%+[-.05,-.025,0,.025,.05];
+    minSteps = pi/70;%*[.8 .9 1 1.1 1.2];%minStep;%*(.5:.1:1.5);
+    maxSteps = pi/100;%*[.8 .9 1 1.1 1.2];%maxStep;%*(.5:.1:1.5);
+    xScales = .5;%*[.9 1 1.1]; 
+    torsoAngles = [.17 .18 .19]+.04;%+[-.05,-.025,0,.025,.05];
 end
 
 NumStepAngle = length(xScales);
@@ -112,7 +112,7 @@ netEnergy = sum(abs([optDataVec.uNet]),2).*[optDataVec.time];
 speed = [optDataVec.dist]./[optDataVec.time];
 COT = netEnergy./dist; %value proportional to cost of transport (b/c gravity and mass are fixed)
 
-[maxDist, i_maxDist] = maxk(dist,25); %start by taking the top distance to avoid high efficiency single step cases
+[maxDist, i_maxDist] = maxk(dist,100); %start by taking the top distance to avoid high efficiency single step cases
 [maxSpeed, i_maxSpeed] = maxk(speed,10);
 [minCOT, i_minCOT] = mink(COT(i_maxDist),10);
 i_minCOT = i_maxDist(i_minCOT);%swap around indices so they make more sense
@@ -151,4 +151,4 @@ save('bestParams','bestParams');
 
 bestParams %display new optimal parameters
 
-%testControllers([bestParams.solution],1); %animate the winner
+testControllers([bestParams.solution],1); %animate the winner
