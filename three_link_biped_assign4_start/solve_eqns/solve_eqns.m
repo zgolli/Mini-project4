@@ -8,7 +8,7 @@
 
 function sln = solve_eqns(q0, dq0, num_steps)
 
-global optData h_ i_ j_ k_ m_ n_ p_ q_; %optimization data structure, along with global indices so it can be populated from other functions
+global optData h_ i_ j_ k_ m_ n_ p_ q_ h; %optimization data structure, along with global indices so it can be populated from other functions
 
 options = odeset('RelTol',1e-5, 'Events', @event_func);
 h = 0.001; % time step

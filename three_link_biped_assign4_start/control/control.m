@@ -3,6 +3,7 @@ function u = control(t, q, dq, q0, dq0, step_number)
 % function
 % you don't necessarily need to use all the inputs to this control function
 global optData h_ i_ j_ k_ m_ n_ p_ q_ plotsOn; %optimization data structure, along with global indices so it can be populated from other functions
+global h %stores timestep from solve_eqns.m
 %%IF THE INDEXING IS CHANGED, CHANGES NEED TO BE REFLECTED IN THIS FILE,
 %%control.m AND solve_eqns.m
 
@@ -24,8 +25,8 @@ end
 sigmoid = @(x) (maxStep-minStep).*(2./(1+exp(-x./xScale))-1)+minStep; %default sigmoid function reaches 99% in 4.5 steps
 stepangle = sigmoid(step_number);
 
-y=[q(3)+torsoAngle;q(2)-q(3)+stepangle];
-dy=[dq(3);dq(2)-dq(3)];
+y=[q(3)-torsoAngle;q(2)+sin(q(1))+stepangle];
+dy=[dq(3);dq(2)+cos(q(1))*dq(1)];
 
 u=  y.* Kp  + dy.*  Kd ;
 
@@ -51,7 +52,20 @@ if isfield(optData,'uNet')
     %keep track of the total control input 
     %NOTE: THE VALIDITY OF USING THE TOTAL RELIES ON THE TIME STEP BEING 
     %CONSTANT. TBD IF THIS IS THE CASE WITH ODE45
-    optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet(1) = optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet(1) +u(1);
-    optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet(2) = optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet(2) +u(2);
+    dBeta1 = dq(1) - dq(3);
+    dBeta2 = dq(2) - dq(3);
+    dt = h;
+    incrEnergy1 = u(1)*dBeta1*dt; %incremental energy 
+    incrEnergy2 = u(2)*dBeta2*dt;
+    
+    if(incrEnergy1 < 0)
+        incrEnergy1 = 0; %only consider positive work
+    end
+    if(incrEnergy2 < 0)
+        incrEnergy2 = 0; %only consider positive work
+    end
+    
+    optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet(1) = optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet(1) + incrEnergy1; 
+    optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet(2) = optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet(2) + incrEnergy2;
 end
 end

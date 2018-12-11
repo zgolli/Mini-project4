@@ -8,13 +8,13 @@ clearvars –global
 global optData h_ i_ j_ k_ m_ n_ p_ q_ plotsOn; %optimization data structure, along with global indices so it can be populated from other functions
 
 %number of search steps for each variable
-NumKd = 3*[1, 1];
-NumKp = 3*[1, 1];
+NumKd = 1*[1, 1];
+NumKp = 1*[1, 1];
 
 %step sizes for each variable. start coarse, improve resolution around
 %points of interest
-StepKd = [.125, .125];
-StepKp = [1.25, 1.25];
+StepKd = [1, 1];
+StepKp = [10, 10];
 
 if ~exist('bestParams.mat','file')
     %nominal gains to be optimized
@@ -39,11 +39,11 @@ else
     minStep = bestParams.minStep;
     maxStep = bestParams.maxStep;
     xScale = bestParams.xScale;
-    torsoAngle = bestParams.torsoAngle;
-    minSteps = minStep;%*[.9 1 1.1];
-    maxSteps = maxStep;%*[.9 1 1.1];
-    xScales = xScale;%*[.9 1 1.1]; 
-    torsoAngles = torsoAngle+[-.1,-.05,0,.05,.1];
+    torsoAngle = .18;%bestParams.torsoAngle;
+    minSteps = pi/70*[.8 .9 1 1.1 1.2];%minStep;%*(.5:.1:1.5);
+    maxSteps = pi/100*[.8 .9 1 1.1 1.2];%maxStep;%*(.5:.1:1.5);
+    xScales = xScale*[.9 1 1.1]; 
+    torsoAngles = torsoAngle;%+[-.05,-.025,0,.025,.05];
 end
 
 NumStepAngle = length(xScales);
@@ -52,7 +52,7 @@ NumMinStep = length(minSteps);
 NumTorsoAngles = length(torsoAngles);
 
 %initial conditions for the walker
-q0 = [0;pi/3;pi/10];
+q0 = [0;-pi/6;pi/10];
 dq0 = [0;0;0];
 num_steps = 25;
 
@@ -88,8 +88,8 @@ for h_=NumKd(1):-1:1
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet = zeros(1,2); %total input given to each actuator, Nm
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).dist = 0; %total distance travelled, measured by the hip, m
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).time = 0; %total time, s
-                                optData(h_,i_,j_,k_,m_,n_,p_,q_).solution = solve_eqns(q0,dq0,num_steps);
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).stepVel = 0; %avg step velocity of the final step
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).solution = solve_eqns(q0,dq0,num_steps);
 
                                 if(plotsOn==1)
                                     animate(optData(h_,i_,j_,k_,m_,n_,p_,q_).solution);
@@ -138,6 +138,8 @@ maxSteps = [optDataVec.maxStep];
 bestParams.maxStep = maxSteps(i);
 minSteps= [optDataVec.minStep];
 bestParams.minStep = minSteps(i);
+torsoAngles = [optDataVec.torsoAngle];
+bestParams.torsoAngle = torsoAngles(i);
 bestParams.minCOT = minCOT(1);
 bestParams.dist = dist(i);
 bestParams.index = i;
@@ -149,4 +151,4 @@ save('bestParams','bestParams');
 
 bestParams %display new optimal parameters
 
-testControllers([bestParams.solution],1); %animate the winner
+%testControllers([bestParams.solution],1); %animate the winner
