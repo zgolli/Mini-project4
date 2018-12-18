@@ -13,8 +13,8 @@ NumKp = 1*[1, 1];
 
 %step sizes for each variable. start coarse, improve resolution around
 %points of interest
-StepKd = 6*[1, 1];
-StepKp = 6*[10, 10];
+StepKd = 1*[1, 1];
+StepKp = 1*[10, 10];
 
 if ~exist('bestParams.mat','file')
     %nominal gains to be optimized
@@ -43,7 +43,7 @@ else
     minSteps = pi/70;%*[.8 .9 1 1.1 1.2];%minStep;%*(.5:.1:1.5);
     maxSteps = pi/100;%*[.8 .9 1 1.1 1.2];%maxStep;%*(.5:.1:1.5);
     xScales = .5;%*[.9 1 1.1]; 
-    torsoAngles = [.17 .18 .19]+.04;%+[-.05,-.025,0,.025,.05];
+    torsoAngles = .19;%[.17 .18 .19]+.04;%+[-.05,-.025,0,.025,.05];
 end
 
 NumStepAngle = length(xScales);
@@ -93,6 +93,7 @@ for h_=NumKd(1):-1:1
 
                                 if(plotsOn==1)
                                     animate(optData(h_,i_,j_,k_,m_,n_,p_,q_).solution);
+                                    analyze(optData(h_,i_,j_,k_,m_,n_,p_,q_).solution);
                                 end
 
                                 strcat(['Processing Combination ',num2str(iterCount),' of ',num2str(numIter)])

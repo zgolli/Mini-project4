@@ -14,7 +14,7 @@ options = odeset('RelTol',1e-5, 'Events', @event_func);
 h = 0.001; % time step
 tmax = 2; % max time that we allow for a single step
 tspan = 0:h:tmax;
-y0 = [q0; dq0];
+y0 = [q0; dq0; 0;0];%modified this tooo
 t0 = 0;
 
 % we define the solution as a structure to simplify the post-analyses and
@@ -38,9 +38,10 @@ for i = 1:num_steps
     % Impact map
     q_m = YE(1:3)';
     dq_m = YE(4:6)';
+    u_m = YE(7:8)';
     [q_p, dq_p] = impact(q_m, dq_m);
     
-    y0 = [q_p; dq_p];
+    y0 = [q_p; dq_p; u_m];
     t0 = T(end);
     
 end
