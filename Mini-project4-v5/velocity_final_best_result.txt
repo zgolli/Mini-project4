@@ -1,0 +1,11 @@
+velocity: 0.9066
+
+    torsoAngle = 0.65;%.35;%bestParams.torsoAngle;
+    minSteps = 1.047;%*[.8 .9 1 1.1 1.2];%minStep;%*(.5:.1:1.5);
+    maxSteps =1.05;%*[.8 .9 1 1.1 1.2];%maxStep;%*(.5:.1:1.5);
+    xScales = xScale;%*[.9 1 1.1];
+
+SCALE=43;
+fac=(1+tanh(-step_number/295));
+y=[q(3)-tanh(step_number/SCALE)*torsoAngle;q(2)+tanh(fac*minStep*q(1)+0.001)*maxStep+0.04];
+dy=[dq(3);dq(2)+(fac*minStep*maxStep)/(cosh(fac*minStep*q(1)))^2*dq(1)];
