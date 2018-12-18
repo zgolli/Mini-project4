@@ -34,14 +34,15 @@ end
 % dy=[dq(3);dq(2)+(step_number*minStep*maxStep)/(cosh(step_number*minStep*q(1)))^2*dq(1)];
 % y=[q(3)-tanh(step_number/SCALE)*torsoAngle;q(2)+tanh(+1*minStep*q(1))*maxStep+0.04];
 % dy=[dq(3);dq(2)+(1*minStep*maxStep)/(cosh(1*minStep*q(1)))^2*dq(1)];
-maxStep=maxStep.*(tanh(-step_number/1600)+1);
+% maxStep=maxStep.*(tanh(-step_number/1600)+1);
+
 SCALE=43;
 fac=(1+tanh(-step_number/295));
 y=[q(3)-tanh(step_number/SCALE)*torsoAngle;q(2)+tanh(fac*minStep*q(1)+0.001)*maxStep+0.04];
 dy=[dq(3);dq(2)+(fac*minStep*maxStep)/(cosh(fac*minStep*q(1)))^2*dq(1)];
 
 Kd3=[0;0].*tanh(step_number/10);
-u=  y.* Kp  + dy.*  Kd +Kd3.*(1.5-optData.ith_step_velocity);
+u=  y.* Kp*2  + dy.*  Kd +Kd3.*(1.5-optData.ith_step_velocity);
 
 % Kd3=1000;
 % u=  y.* Kp  + dy.*  Kd + Kd3*(1.5-bestParams.velocity) ;
