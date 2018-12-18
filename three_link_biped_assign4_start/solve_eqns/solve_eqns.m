@@ -44,6 +44,13 @@ for i = 1:num_steps
     y0 = [q_p; dq_p; u_m];
     t0 = T(end);
     
+    [~, ~, ~, l1, ~, ~, ~] = set_parameters;    
+    step_time = t0-T(1);
+    q1i = Y(1,1);
+    q1f = Y(end,1);
+    step_dist = l1*(sin(q1f)-sin(q1i));
+    optData(h_,i_,j_,k_,m_,n_,p_,q_).ith_step_velocity = step_dist/step_time; %avg step velocity measured at the hip
+    
 end
 if isfield(optData,'time')
     optData(h_,i_,j_,k_,m_,n_,p_,q_).time = t0;
