@@ -17,13 +17,14 @@ G = eval_G(q);
 B = eval_B();
 
 u = control(t, q, dq, q0, dq0, step_number); 
+u_ext = perturbation(q, step_number); % perturbation torque due to the external force at hip
 
 n = 8;   %trying to add u as columns 7 and 8 of output of ode45
 dy = zeros(n, 1);
 dy(1) = y(4);
 dy(2) = y(5);
 dy(3) = y(6);
-dy(4:6) = M \ (-C*dq - G + B*u);
+dy(4:6) = M \ (-C*dq - G + B*(u+u_ext));
 dy(7) = u(1) - u_prior(1);
 dy(8) = u(2) - u_prior(2);
 

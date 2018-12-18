@@ -16,7 +16,7 @@ for j = 1:num_steps
     for i = 1:skip:N
         q = Y(i, 1:3);
         pause(0.002);
-        visualize(q, r0);
+        visualize(q, r0,j);
         hold off
     end
     [x0, ~, ~, ~] = kin_swf(q);
