@@ -84,6 +84,7 @@ for h_=NumKd(1):-1:1
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).maxStep = maxSteps(n_); %max target step angle achieved by sigmoid function
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).minStep = minSteps(p_); %max target step angle achieved by sigmoid function
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).torsoAngle = torsoAngles(q_); %max target step angle achieved by sigmoid function
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).ith_step_velocity = 0; %max target step angle achieved by sigmoid function
                                 
                                 %data to be output
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet = zeros(1,2); %total input given to each actuator, Nm
@@ -94,6 +95,7 @@ for h_=NumKd(1):-1:1
                                 
                                 if(plotsOn==1)
                                     animate(optData(h_,i_,j_,k_,m_,n_,p_,q_).solution);
+                                    analyze(optData(h_,i_,j_,k_,m_,n_,p_,q_).solution);
                                 end
                                 
                                 strcat(['Processing Combination ',num2str(iterCount),' of ',num2str(numIter)])
