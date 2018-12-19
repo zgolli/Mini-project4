@@ -43,7 +43,7 @@ function sln = analyze(sln)
     title('Joint Angles Over Time');
     
     %-velocity of the robot vs time, 
-    v = l1*cosd(q(:,1)).*dq(:,1);
+    v = l1*cosd(q(:,1)).*dq(:,1)*pi/180;
     subplot(2,2,3);
     hold on;
     plot(t,v);
