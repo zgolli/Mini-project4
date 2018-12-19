@@ -27,7 +27,7 @@ stepangle = sigmoid(step_number);
 
 maxStep=1;
 xScale=1.;
-max_angle = pi/4*xScale;
+max_angle = pi/8*xScale;
 if(q(1)<-max_angle || q(1) >max_angle)
    q2_target = -maxStep*sign(xScale*q(1));
    dq2_target = 0;

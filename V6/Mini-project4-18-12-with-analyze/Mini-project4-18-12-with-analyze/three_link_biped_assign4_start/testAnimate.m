@@ -36,7 +36,7 @@ if ~exist('bestParams.mat','file')
     torsoAngles = [0];
 else
     load bestParams
-    Kp0=[bestParams.Kp1; bestParams.Kp2];
+    Kp0=1*[bestParams.Kp1; bestParams.Kp2];
     Kd0=[bestParams.Kd1 ; bestParams.Kd2];
     
     StepKd = .5*StepKd;%converge step size
@@ -45,11 +45,11 @@ else
     minStep = bestParams.minStep;
     maxStep = bestParams.maxStep;
     xScale = bestParams.xScale;
-    torsoAngle = .21;%bestParams.torsoAngle;
-    minSteps = minStep;%*(.5:.1:1.5);
-    maxSteps = maxStep;%*(.5:.1:1.5);
-    xScales = xScale;%*[.9 1 1.1];
-    torsoAngles = torsoAngle;%torsoAngle;%+[-.05,-.025,0,.025,.05];
+    torsoAngle = .1;%bestParams.torsoAngle;
+    minSteps = 1*minStep;%*(.5:.1:1.5);
+    maxSteps = 1.*maxStep;%*(.5:.1:1.5);
+    xScales = 1*xScale;%*[.9 1 1.1];
+    torsoAngles = torsoAngle;%torsoAngle;%
 end
 
 NumStepAngle = length(xScales);
