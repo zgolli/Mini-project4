@@ -30,20 +30,20 @@ if ~exist('bestParams.mat','file')
     torsoAngles = [0,.05,.1,.15,.2];
 else
     load bestParams
-    Kp0=[bestParams.Kp1; bestParams.Kp2];
-    Kd0=[bestParams.Kd1 ; bestParams.Kd2];
+    Kp0=1*[bestParams.Kp1; bestParams.Kp2];
+    Kd0=1*[bestParams.Kd1 ; bestParams.Kd2];
     
     StepKd = .5*StepKd;%converge step size
     StepKp = .5*StepKp;
     
     minStep = bestParams.minStep;
-    maxStep = bestParams.maxStep;
+    maxStep = pi/2;%bestParams.maxStep;
     xScale = bestParams.xScale;
-    torsoAngle = 0.65;%.35;%bestParams.torsoAngle;
-    minSteps = 1.048;%*[.8 .9 1 1.1 1.2];%minStep;%*(.5:.1:1.5);
-    maxSteps =1.05;%*[.8 .9 1 1.1 1.2];%maxStep;%*(.5:.1:1.5);
-    xScales = xScale;%*[.9 1 1.1];
-    torsoAngles = torsoAngle;%+[-.05,-.025,0,.025,.05];
+    torsoAngle = 0.18;%.35;%bestParams.torsoAngle;
+    minSteps = pi/70;%*[.8 .9 1 1.1 1.2];%minStep;%*(.5:.1:1.5);
+    maxSteps =pi/100;%*[.8 .9 1 1.1 1.2];%maxStep;%*(.5:.1:1.5);
+    xScales = .5;%*[.9 1 1.1];
+    torsoAngles = .19;%+[-.05,-.025,0,.025,.05];
 end
 
 NumStepAngle = length(xScales);
@@ -85,6 +85,7 @@ for h_=NumKd(1):-1:1
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).minStep = minSteps(p_); %max target step angle achieved by sigmoid function
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).torsoAngle = torsoAngles(q_); %max target step angle achieved by sigmoid function
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).ith_step_velocity = 0; %max target step angle achieved by sigmoid function
+                                optData(h_,i_,j_,k_,m_,n_,p_,q_).Kd3 = Kd0(1); %step period control... arbitrary value for now 
                                 
                                 %data to be output
                                 optData(h_,i_,j_,k_,m_,n_,p_,q_).uNet = zeros(1,2); %total input given to each actuator, Nm
@@ -151,7 +152,7 @@ bestParams.solution = Solutions(i);
 velocities = [optDataVec.stepVel];
 bestParams.velocity = velocities(i);
 %bestParams.avgvelocity = optDataVec.avgVel(i);
-save('bestParams','bestParams');
+%save('bestParams','bestParams');
 
 bestParams %display new optimal parameters
 

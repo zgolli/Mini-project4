@@ -52,14 +52,6 @@ function sln = analyze(sln)
     title('Hip Velocity Over Time');
     
     %-torques vs time, 
-%     subplot(2,2,2);
-%     hold on;
-%     plot(t,u(:,1));
-%     plot(t,u(:,2));
-%     legend('u1','u2');
-%     xlabel('Time (s)');
-%     ylabel('Actuator Torque (Nm)');
-%     title('Torque vs Time');
     subplot(2,2,2);
     hold on;
     global u_vs_time1 u_vs_time2 u_vs_timet
@@ -72,6 +64,10 @@ function sln = analyze(sln)
     title('Torque vs Time');
     
     %-cost of transport
+    u_vs_timet;
+    u_vs_time1;
+    u_vs_time2;
+        
     dBeta1 = dq(:,1)-dq(:,3);
     dBeta2 = dq(:,2)-dq(:,3);
     w1 = cumsum(dBeta1.*u(:,1));

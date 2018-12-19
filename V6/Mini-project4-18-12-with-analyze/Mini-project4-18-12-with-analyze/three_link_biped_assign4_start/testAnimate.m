@@ -45,9 +45,9 @@ else
     minStep = bestParams.minStep;
     maxStep = bestParams.maxStep;
     xScale = bestParams.xScale;
-    torsoAngle = 0.65;%.35;%bestParams.torsoAngle;
-    minSteps = 1.047;%*[.8 .9 1 1.1 1.2];%minStep;%*(.5:.1:1.5);
-    maxSteps =1.05;%*[.8 .9 1 1.1 1.2];%maxStep;%*(.5:.1:1.5);
+    torsoAngle = bestParams.torsoAngle;
+    minSteps = minStep;%*(.5:.1:1.5);
+    maxSteps = maxStep;%*(.5:.1:1.5);
     xScales = xScale;%*[.9 1 1.1];
     torsoAngles = torsoAngle;%+[-.05,-.025,0,.025,.05];
 end

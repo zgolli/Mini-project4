@@ -65,7 +65,7 @@ if isfield(optData,'time')
     
     %finding the final position, in much the same way as animate does
     r0 = [0; 0];
-    for j = 1:num_steps-1       
+    for j = 1:length(sln.Y)       
         Y = sln.Y{j};
         [x0, ~, ~, ~] = kin_swf(Y(end,1:3));
         r0 = r0 + [x0; 0]; %find the starting position after jth step

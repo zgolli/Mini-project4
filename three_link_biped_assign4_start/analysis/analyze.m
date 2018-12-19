@@ -43,7 +43,7 @@ function sln = analyze(sln)
     title('Joint Angles Over Time');
     
     %-velocity of the robot vs time, 
-    v = l1*cosd(q(:,1)).*dq(:,1);
+    v = l1*cosd(q(:,1)).*dq(:,1)*pi/180;
     subplot(2,2,3);
     hold on;
     plot(t,v);
@@ -64,7 +64,7 @@ function sln = analyze(sln)
     %-cost of transport
     dBeta1 = dq(:,1)-dq(:,3);
     dBeta2 = dq(:,2)-dq(:,3);
-    w1 = cumsum(dBeta1.*u(:,1));
+    w1 = cumsum(max(dBeta1.*u(:,1),zeros(length(u(:,1)),1)));
     w2 = cumsum(max(-dBeta2.*u(:,2),zeros(length(u(:,2)),1)));
     wnet = w1+w2;
     mnet = m1+m2+m3;

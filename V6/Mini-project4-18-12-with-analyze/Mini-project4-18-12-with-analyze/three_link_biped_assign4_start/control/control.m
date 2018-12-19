@@ -22,15 +22,27 @@ else
     Kd=[10 ; -10];
     torsoAngle = 0;
 end
+sigmoid = @(x) (maxStep-minStep).*(2./(1+exp(-x./xScale))-1)+minStep; %default sigmoid function reaches 99% in 4.5 steps
+stepangle = sigmoid(step_number);
 
+maxStep=1;
+xScale=1.;
+max_angle = pi/4*xScale;
+if(q(1)<-max_angle || q(1) >max_angle)
+   q2_target = -maxStep*sign(xScale*q(1));
+   dq2_target = 0;
+else
+    q2_target = -maxStep*sin(xScale*q(1));
+    dq2_target = -maxStep*xScale*cos(xScale*q(1))*dq(1);
+end
 
-maxStep=maxStep.*tanh(step_number/5);
-SCALE=43;
-fac=(1+tanh(-step_number/295));
-y=[q(3)-tanh(step_number/SCALE)*torsoAngle;q(2)+tanh(fac*minStep*q(1)+0.001)*maxStep+0.04];
-dy=[dq(3);dq(2)+(fac*minStep*maxStep)/(cosh(fac*minStep*q(1)))^2*dq(1)];
-u=  y.* Kp  + dy.*  Kd 
+y=[q(3)-torsoAngle;q(2)-q2_target+stepangle];
+dy=[dq(3);dq(2)-dq2_target];
 
+%y=[q(3)-torsoAngle;q(2)+sin(q(1))+stepangle];
+%dy=[dq(3);dq(2)+cos(q(1))*dq(1)];
+
+u=  y.* Kp  + dy.*  Kd;
 
 if(abs(u(1))>30)
    u(1)=sign(u(1))*30;
