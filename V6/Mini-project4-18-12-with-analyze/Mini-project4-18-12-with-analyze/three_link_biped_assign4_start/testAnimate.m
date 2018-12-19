@@ -33,7 +33,7 @@ if ~exist('bestParams.mat','file')
     %xScales correspond with ~convergence in 2, 4, 6, 12, and 24 steps
     %respectively
     
-    torsoAngles = [0,.05,.1,.15,.2];
+    torsoAngles = [0];
 else
     load bestParams
     Kp0=[bestParams.Kp1; bestParams.Kp2];
@@ -45,11 +45,11 @@ else
     minStep = bestParams.minStep;
     maxStep = bestParams.maxStep;
     xScale = bestParams.xScale;
-    torsoAngle = bestParams.torsoAngle;
+    torsoAngle = .21;%bestParams.torsoAngle;
     minSteps = minStep;%*(.5:.1:1.5);
     maxSteps = maxStep;%*(.5:.1:1.5);
     xScales = xScale;%*[.9 1 1.1];
-    torsoAngles = torsoAngle;%+[-.05,-.025,0,.025,.05];
+    torsoAngles = torsoAngle;%torsoAngle;%+[-.05,-.025,0,.025,.05];
 end
 
 NumStepAngle = length(xScales);
@@ -156,8 +156,6 @@ Solutions = [optDataVec.solution];
 bestParams.solution = Solutions(i);
 velocities = [optDataVec.stepVel];
 bestParams.velocity = velocities(i);
-%bestParams.avgvelocity = optDataVec.avgVel(i);
-save('bestParams','bestParams');
 
 bestParams %display new optimal parameters
 

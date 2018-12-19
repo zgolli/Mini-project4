@@ -54,8 +54,6 @@ end
 
 if isfield(optData,'uNet')
     %keep track of the total control input 
-    %NOTE: THE VALIDITY OF USING THE TOTAL RELIES ON THE TIME STEP BEING 
-    %CONSTANT. TBD IF THIS IS THE CASE WITH ODE45
     dBeta1 = dq(1) - dq(3);
     dBeta2 = dq(2) - dq(3);
     dt = h;

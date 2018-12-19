@@ -17,10 +17,13 @@ G = eval_G(q);
 B = eval_B();
 
 u = control(t, q, dq, q0, dq0, step_number); 
-global u_vs_time1 u_vs_time2 u_vs_timet
+global u_vs_time1 u_vs_time2 u_vs_timet dq_ q__ step_number_
 u_vs_time1=[u_vs_time1;u(1)];
 u_vs_time2=[u_vs_time2;u(2)];
 u_vs_timet=[u_vs_timet;t];
+dq_ = [dq_;dq'];
+q__ = [q__;q'];
+step_number_ = [step_number_;step_number];
 
 u_ext = perturbation(q, step_number); % perturbation torque due to the external force at hip
 

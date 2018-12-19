@@ -54,7 +54,7 @@ function sln = analyze(sln)
     %-torques vs time, 
     subplot(2,2,2);
     hold on;
-    global u_vs_time1 u_vs_time2 u_vs_timet
+    global u_vs_time1 u_vs_time2 u_vs_timet dq_ q__ step_number_
     plot(u_vs_timet,u_vs_time1);
     plot(u_vs_timet,u_vs_time2);
     legend('u1','u2');
@@ -63,21 +63,25 @@ function sln = analyze(sln)
     
     title('Torque vs Time');
     
-    %-cost of transport
-    u_vs_timet;
-    u_vs_time1;
-    u_vs_time2;
-        
-    dBeta1 = dq(:,1)-dq(:,3);
-    dBeta2 = dq(:,2)-dq(:,3);
-    w1 = cumsum(dBeta1.*u(:,1));
-    w2 = cumsum(max(dBeta2.*u(:,2),zeros(length(u(:,2)),1)));
+    %-cost of transport       
+    u_ = [u_vs_time1, u_vs_time2];
+    dBeta1 = dq_(:,1)-dq_(:,3);
+    dBeta2 = dq_(:,2)-dq_(:,3);
+    w1 = cumsum(max(dBeta1.*u_(:,1),zeros(length(u_(:,1)),1)));
+    w2 = cumsum(max(dBeta2.*u_(:,2),zeros(length(u_(:,2)),1)));
     wnet = w1+w2;
     mnet = m1+m2+m3;
-    COT = wnet./(mnet*g*d);    
+    
+    d_ = l1*sin(q__(:,1));
+
+    [c,ia,ic] = unique(step_number_,'last');
+    wnet = wnet(ia);
+    d_ = cumsum(d_(ia));
+
+    COT = wnet./(mnet*g*d_);    
     subplot(2,2,4);
     hold on;
-    plot(t,COT);
+    plot(COT,'o');
     xlabel('Time (s)');
     ylabel('Cost of Transport');
     title('COT vs Time');    
